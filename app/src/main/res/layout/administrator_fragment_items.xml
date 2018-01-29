@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/group_item_view"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_gravity="start|center"
+            android:layout_width="wrap_content"
+            android:background="@drawable/play_white_stroke"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/admin_icon"
+                android:layout_gravity="center"
+                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:background="@drawable/send"/>
+        </FrameLayout>
+        <FrameLayout
+            android:layout_gravity="end|center"
+            android:layout_width="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/admin_name"
+                android:layout_gravity="start|center_vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="9pt"
+                android:text="Send Messages"/>
+        </FrameLayout>
+    </LinearLayout>
+    <FrameLayout
+        android:layout_gravity="end|center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/proceed"
+            android:layout_gravity="start|center_vertical"
+            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:visibility="gone"
+            android:textSize="7pt"
+            android:background="@drawable/proceed"/>
+    </FrameLayout>
+</FrameLayout>

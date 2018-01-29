@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "909460263418",
+    "firebase_url": "https://cardealership-e6e6e.firebaseio.com",
+    "project_id": "cardealership-e6e6e",
+    "storage_bucket": "cardealership-e6e6e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909460263418:android:b055d2389c96fa46",
+        "android_client_info": {
+          "package_name": "com.wiseman.cardealership"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "909460263418-i0aofq5fla98o4t4dfmckvbrl8i94bvr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wiseman.cardealership",
+            "certificate_hash": "6a3f56e09b71e30336d9bbd85514c421c12b75fc"
+          }
+        },
+        {
+          "client_id": "909460263418-bj0osidq4lt0etijefajkqa7eflirmji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmRQecoDc2S3xwQqOnuxyIYI8hiI5ngU0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "909460263418-bj0osidq4lt0etijefajkqa7eflirmji.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
