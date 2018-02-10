@@ -13,10 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <LinearLayout
-        android:id="@+id/searchs_button"
+        android:id="@+id/search_button"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:clickable="true"
+        android:focusable="true"
         android:layout_margin="16dp"
         android:padding="5dp"
         android:background="@drawable/search_button_background"
@@ -76,6 +77,44 @@
         android:layout_width="match_parent"
         android:background="@drawable/layout_features_background"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/province_layout"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_margin="10dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/province"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textSize="9pt"
+                        android:text="Province" />
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_height="wrap_content">
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/province_spinner"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                    </android.support.v7.widget.AppCompatSpinner>
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
         android:id="@+id/message_layout_message"

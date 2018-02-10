@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,7 +34,10 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesHolder>{
     Context context,c;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
+    com.wiseman.cardealership.Functions.Animation anim;
     Animation upAnim;
+    public static  int COUNT_DOWN=200;
+    CountDownTimer countDownTimer;
     ProgressDialog myProgressDialog;
     String url;
     Bitmap bitmap=null;
@@ -43,6 +47,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesHolder>{
         this.recyclerView = recyclerView;
         this.layoutManager = layoutManager;
         this.myProgressDialog = myProgressDialog;
+        anim = new com.wiseman.cardealership.Functions.Animation(context);
     }
     @Override
     public ImagesHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -66,9 +71,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesHolder>{
             Picasso.with(context).load(mDataset.get(position).getLink()).into(holder.video_thumbnail);
 
             holder.play.getBackground().setAlpha(150);
-            upAnim = AnimationUtils.loadAnimation(context, R.anim.fromtop_translation);
-            holder.itemView.clearAnimation();
-            holder.itemView.startAnimation(upAnim);
+
             holder.play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -99,6 +102,23 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesHolder>{
                     }
                 }
             });
+            anim.goDown(holder.itemView);
+            anim.goDown(holder.video_thumbnail);
+            anim.goDown(holder.subject);
+            anim.goDown(holder.message);
+            anim.goDown(holder.date);
+            anim.goDown(holder.author);
+            countDownTimer = new CountDownTimer(COUNT_DOWN,16) {
+                @Override
+                public void onTick(long l) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                }
+            };
+            countDownTimer.start();
         }
     }
     @Override

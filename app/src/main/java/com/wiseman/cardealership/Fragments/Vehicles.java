@@ -1,5 +1,11 @@
 package com.wiseman.cardealership.Fragments;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,17 +13,37 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.wiseman.cardealership.Adapters.VehiclesAdapter;
+import com.wiseman.cardealership.Globals.Globals;
 import com.wiseman.cardealership.Objects.VehicleObject;
 import com.wiseman.cardealership.R;
+import com.wiseman.cardealership.Services.VehiclesDataset;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Wiseman on 2018-01-25.
@@ -30,24 +56,71 @@ public class Vehicles extends Fragment implements View.OnClickListener{
     LinearLayoutManager mLayoutManager;
     VehiclesAdapter adapter;
     List<VehicleObject> mDataset;
-    String make,year,price;
+    String make="Any",year,price=0+"",province="All";
+    RequestQueue requestQueue;
+    LinearLayout empty;
+    TextView icon,icon_message;
+    RecyclerView.Adapter mAdapter;
+    ConnectivityManager connectivityManager;
+    NetworkInfo activeNetwork;
+    boolean isConnected;
+    FrameLayout try_again;
+    LinearLayout no_internet;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_vehicles,container,false);
+
+        connectivityManager = (ConnectivityManager)view.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        activeNetwork = connectivityManager.getActiveNetworkInfo();
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        try_again = (FrameLayout)view.findViewById(R.id.try_again);
+        no_internet = (LinearLayout)view.findViewById(R.id.no_internet);
+        try_again.setOnClickListener(this);
+
         mRecyclerView = (RecyclerView)view.findViewById(R.id.vehicles_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        mDataset = getmDataset();
-        mLayoutManager = new LinearLayoutManager( view.getContext());
+        mLayoutManager = new LinearLayoutManager(view.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        adapter = new VehiclesAdapter(view.getContext(),mDataset,mRecyclerView,mLayoutManager);
-        mRecyclerView.setAdapter(adapter);
+        if(!isConnected)
+        {
+            no_internet.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        }
+        else
+        {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            fetch(view.getContext(), mRecyclerView);
+        }
+
         search_layout = (LinearLayout)view.findViewById(R.id.search_layout);
         search_elements = (LinearLayout)view.findViewById(R.id.search_elements);
         search_vehicle_layout = (LinearLayout)view.findViewById(R.id.search_vehicle_layout);
         search_layout.getBackground().setAlpha(180);
-        search = (LinearLayout)view.findViewById(R.id.searchs_button);
+        search = (LinearLayout)view.findViewById(R.id.search_button);
+        empty = (LinearLayout)view.findViewById(R.id.empty_layout);
+        icon = (TextView)view.findViewById(R.id.empty_icon);
+        icon_message = (TextView)view.findViewById(R.id.empty_icon_message);
+        Spinner prov = (Spinner)view.findViewById(R.id.province_spinner);
+        ArrayAdapter<CharSequence> provi = ArrayAdapter.createFromResource(view.getContext(),R.array.provinces,R.layout.dropdown_items);
+        provi.setDropDownViewResource(R.layout.dropdown_items);
+        prov.setAdapter(provi);
+        prov.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                province= adapterView.getItemAtPosition(i).toString();
+                if(i==0)
+                {
+                    province="All";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                province = "All";
+            }
+        });
 
         Spinner spinner = (Spinner)view.findViewById(R.id.make_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),R.array.make,R.layout.dropdown_items);
@@ -57,11 +130,15 @@ public class Vehicles extends Fragment implements View.OnClickListener{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
               make = adapterView.getItemAtPosition(i).toString();
+                if(i==0)
+                {
+                    make="Any";
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-               make = adapterView.getItemAtPosition(0).toString();
+                make="Any";
             }
         });
 
@@ -72,12 +149,12 @@ public class Vehicles extends Fragment implements View.OnClickListener{
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-               year = adapterView.getItemAtPosition(i).toString();
+               year = i+"";
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                year = adapterView.getItemAtPosition(0).toString();
+                year = 0+"";
             }
         });
 
@@ -88,34 +165,28 @@ public class Vehicles extends Fragment implements View.OnClickListener{
         spinna.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-               price = adapterView.getItemAtPosition(i).toString();
+               price = i+"";
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                price = adapterView.getItemAtPosition(0).toString();
+                price = 0+"";
             }
         });
 
-        search.setOnClickListener(this);
+       search.setOnClickListener(this);
 
         return view;
-    }
-    private List<VehicleObject> getmDataset()
-    {
-        List<VehicleObject> objects = new ArrayList<>();
-        objects.add(new VehicleObject(R.drawable.bmw,"R350 000","Alpine White, 2016, 7 500km, M Sport Package, Xenonx, 19\"wheels, Sunroof, PDC.","BMW 520i A"));
-        objects.add(new VehicleObject(R.drawable.polo,"R250 000","Full house, leather, panoramic sunroof, 19\"wheels, Rev camera, Dynamic chassis control, 34 000km, 2016.","VW Polo 2.0 TSI"));
-        objects.add(new VehicleObject(R.drawable.jaguar,"R390 000","A/c, p/s, e/w, c/l, r/cd, airbags, 45 000km, 2015.","Jaguar XE 25t RWD MSRP"));
-        return  objects;
     }
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
+        activeNetwork = connectivityManager.getActiveNetworkInfo();
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         switch(id)
         {
-            case R.id.searchs_button:
+            case R.id.search_button:
                 if(search_elements.getVisibility()==View.GONE)
                 {
                     search_vehicle_layout.setBackgroundResource(R.drawable.searchback);
@@ -123,10 +194,164 @@ public class Vehicles extends Fragment implements View.OnClickListener{
                 }
                 else
                 {
+
                     search_vehicle_layout.setBackgroundResource(R.drawable.searchbutton);
                     search_elements.setVisibility(View.GONE);
+                    if(!isConnected)
+                    {
+                        no_internet.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        filter(this.view.getContext());
+                    }
+                }
+            break;
+            case R.id.try_again:
+                if(!isConnected)
+                {
+                    no_internet.setVisibility(View.VISIBLE);
+                    mRecyclerView.setVisibility(View.GONE);
+                }
+                else
+                {
+                    mLayoutManager = new LinearLayoutManager(this.view.getContext());
+                    mRecyclerView.setLayoutManager(mLayoutManager);
+                    no_internet.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    fetch(this.view.getContext(),mRecyclerView);
                 }
             break;
         }
+    }
+    public void fetch(final Context context, final RecyclerView recyclerView) {
+        final ProgressDialog myProgressDialog = new ProgressDialog(context);
+        myProgressDialog.show();
+        myProgressDialog.setContentView(R.layout.progress);
+        ProgressBar progressBar = (ProgressBar) myProgressDialog.findViewById(R.id.progressBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#FFFFFF"), PorterDuff.Mode.MULTIPLY);
+        StringRequest request = new StringRequest(Request.Method.GET, Globals.RETRIEVE_VEHICLES_URL,
+
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        if (!response.equalsIgnoreCase(Globals.RETRIEVAL_EMPTY_CONDITION)) {
+                            mDataset = VehiclesDataset.parseData(response);
+                            adapter = new VehiclesAdapter(view.getContext(),mDataset,mRecyclerView,mLayoutManager);
+                            mRecyclerView.setAdapter(adapter);
+                            RelativeLayout layout = (RelativeLayout) myProgressDialog.findViewById(R.id.progress_layout);
+                            ProgressBar bar = (ProgressBar) myProgressDialog.findViewById(R.id.progressBar);
+                            ImageView image = (ImageView) myProgressDialog.findViewById(R.id.progress_image);
+                            Animation anim = AnimationUtils.loadAnimation(context, R.anim.zoom_out);
+                            layout.startAnimation(anim);
+                            image.startAnimation(anim);
+                            bar.startAnimation(anim);
+                            myProgressDialog.dismiss();
+                            recyclerView.setVisibility(View.VISIBLE);
+                            empty.setVisibility(View.GONE);
+                        } else {
+                            recyclerView.setVisibility(View.GONE);
+                            empty.setVisibility(View.VISIBLE);
+                            icon.setBackgroundResource(R.drawable.nomessages);
+                            icon_message.setText("No Vehicles To Show");
+                            myProgressDialog.dismiss();
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener()
+                    {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(context,error.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                if (response.headers == null)
+                {
+                    // cant just set a new empty map because the member is final.
+                    response = new NetworkResponse(
+                            response.statusCode,
+                            response.data,
+                            Collections.<String, String>emptyMap(), // this is the important line, set an empty but non-null map.
+                            response.notModified,
+                            response.networkTimeMs);
+
+
+                }
+                return super.parseNetworkResponse(response);
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue = Volley.newRequestQueue(view.getContext());
+        requestQueue.add(request);
+    }
+    public void filter(final Context context)
+    {
+        final ProgressDialog myProgressDialog = new ProgressDialog(context);
+        myProgressDialog.show();
+        myProgressDialog.setContentView(R.layout.progress);
+        ProgressBar progressBar = (ProgressBar) myProgressDialog.findViewById(R.id.progressBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#FFFFFF"), PorterDuff.Mode.MULTIPLY);
+        StringRequest request = new StringRequest(Request.Method.POST, Globals.FILTERING_VEHICLES_URL,
+
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        if (!response.equalsIgnoreCase(Globals.RETRIEVAL_EMPTY_CONDITION))
+                        {
+                            mDataset = VehiclesDataset.parseData(response);
+                            adapter = new VehiclesAdapter(view.getContext(),mDataset,mRecyclerView,mLayoutManager);
+                            mRecyclerView.setAdapter(adapter);
+                            RelativeLayout layout = (RelativeLayout) myProgressDialog.findViewById(R.id.progress_layout);
+                            ProgressBar bar = (ProgressBar) myProgressDialog.findViewById(R.id.progressBar);
+                            ImageView image = (ImageView) myProgressDialog.findViewById(R.id.progress_image);
+                            Animation anim = AnimationUtils.loadAnimation(context, R.anim.zoom_out);
+                            layout.startAnimation(anim);
+                            image.startAnimation(anim);
+                            bar.startAnimation(anim);
+                            myProgressDialog.dismiss();
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            empty.setVisibility(View.GONE);
+                        }
+                        else
+                        {
+                            mRecyclerView.setVisibility(View.GONE);
+                            empty.setVisibility(View.VISIBLE);
+                            icon.setBackgroundResource(R.drawable.nomessages);
+                            icon_message.setText("No Vehicles To Show");
+                            myProgressDialog.dismiss();
+                        }
+
+
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> parameters = new HashMap<String, String>();
+                parameters.put("province",province);
+                parameters.put("make",make);
+                parameters.put("price",price);
+                parameters.put("year",year);
+                return parameters;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue = Volley.newRequestQueue(view.getContext());
+        requestQueue.add(request);
     }
 }

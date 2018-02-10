@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,7 +32,10 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosHolder> {
     Context context,c;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
+    com.wiseman.cardealership.Functions.Animation anim;
     Animation upAnim;
+    public static  int COUNT_DOWN=200;
+    CountDownTimer countDownTimer;
     ProgressDialog myProgressDialog;
     public VideosAdapter(Context context, List<Item> mDataset, RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager, ProgressDialog myProgressDialog) {
         this.mDataset = mDataset;
@@ -39,6 +43,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosHolder> {
         this.recyclerView = recyclerView;
         this.layoutManager = layoutManager;
         this.myProgressDialog = myProgressDialog;
+        anim = new com.wiseman.cardealership.Functions.Animation(context);
     }
     @Override
     public VideosHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -94,6 +99,26 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosHolder> {
                     }
                 }
             });
+            anim.goDown(holder.itemView);
+            anim.goDown(holder.video_thumbnail);
+            anim.goDown(holder.subject);
+            anim.goDown(holder.message);
+            anim.goDown(holder.date);
+            anim.goDown(holder.author);
+            anim.goDown(holder.video_duration);
+            anim.goDown(holder.play);
+            anim.goDown(holder.video_footer);
+            countDownTimer = new CountDownTimer(COUNT_DOWN,16) {
+                @Override
+                public void onTick(long l) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                }
+            };
+            countDownTimer.start();
         }
     }
     @Override

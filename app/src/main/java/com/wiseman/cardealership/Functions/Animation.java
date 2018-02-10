@@ -40,4 +40,24 @@ public class Animation {
         animation = AnimationUtils.loadAnimation(context, R.anim.fade_out);
         view.startAnimation(animation);
     }
+    public void slideUp(View view)
+    {
+        animation = AnimationUtils.loadAnimation(context, R.anim.slide_up);
+        view.startAnimation(animation);
+    }
+    public void slideDown(View view)
+    {
+        animation = AnimationUtils.loadAnimation(context, R.anim.slide_down);
+        view.startAnimation(animation);
+    }
+    public void goDown(View view)
+    {
+        animation = AnimationUtils.loadAnimation(context, R.anim.go_down);
+        view.startAnimation(animation);
+    }
+    public void goUp(View view)
+    {
+        animation = AnimationUtils.loadAnimation(context, R.anim.go_down);
+        view.startAnimation(animation);
+    }
 }

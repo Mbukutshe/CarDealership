@@ -5,6 +5,8 @@ package com.wiseman.cardealership.Objects;
  */
 
 public class Dashboard {
+    private String name;
+    private int icon;
     public int getIcon() {
         return icon;
     }
@@ -26,6 +28,5 @@ public class Dashboard {
         this.name = name;
     }
 
-    private String name;
-    private int icon;
+
 }

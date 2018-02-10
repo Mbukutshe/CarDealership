@@ -39,7 +39,6 @@ public class Functions implements View.OnClickListener,TabLayout.OnTabSelectedLi
     {
         this.fragmentManager = fragmentManager;
     }
-
     public void setDoneAction(EditText editText)
     {
         editText.setImeOptions(EditorInfo.IME_ACTION_SEND);
@@ -76,7 +75,8 @@ public class Functions implements View.OnClickListener,TabLayout.OnTabSelectedLi
     }
 
     @Override
-    public void onTabSelected(TabLayout.Tab tab) {
+    public void onTabSelected(TabLayout.Tab tab)
+    {
         switch (tab.getPosition())
         {
             case 0:
@@ -84,9 +84,11 @@ public class Functions implements View.OnClickListener,TabLayout.OnTabSelectedLi
                 break;
             case 1:
                 fragmentManager.beginTransaction().replace(R.id.content_main,new Messages()).commit();
+
                 break;
             case 2:
                 fragmentManager.beginTransaction().replace(R.id.content_main,new Documents()).commit();
+
                 break;
             case 3:
                 fragmentManager.beginTransaction().replace(R.id.content_main,new Gallery()).commit();
@@ -95,7 +97,9 @@ public class Functions implements View.OnClickListener,TabLayout.OnTabSelectedLi
     }
 
     @Override
-    public void onTabReselected(TabLayout.Tab tab) {
+    public void onTabReselected(TabLayout.Tab tab)
+    {
+
         switch (tab.getPosition())
         {
             case 0:
@@ -103,9 +107,11 @@ public class Functions implements View.OnClickListener,TabLayout.OnTabSelectedLi
                 break;
             case 1:
                 fragmentManager.beginTransaction().replace(R.id.content_main,new Messages()).commit();
+
                 break;
             case 2:
                 fragmentManager.beginTransaction().replace(R.id.content_main,new Documents()).commit();
+
                 break;
             case 3:
                 fragmentManager.beginTransaction().replace(R.id.content_main,new Gallery()).commit();

@@ -12,7 +12,7 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
+    android:background="#2a303a"
     android:scrollbars="none">
     <LinearLayout
         android:orientation="vertical"
@@ -156,8 +156,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="50dp"
                         android:layout_marginBottom="24dp"
+                        android:textAllCaps="false"
+                        android:textStyle="bold"
+                        android:textSize="9pt"
                         android:padding="12dp"
-                        android:text="Log in"
+                        android:text="Get In"
                         android:textColor="@drawable/button_selector"
                         android:background="@drawable/button_background"/>
                     <android.support.v7.widget.CardView

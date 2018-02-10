@@ -1,11 +1,17 @@
 package com.wiseman.cardealership.Activities;
+
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -41,6 +47,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     EditText username, password, forgotten_username, forgottern_email, forgotten_cell;
     FrameLayout back, send, forgotten;
     LinearLayout login_layout;
+    RelativeLayout login_lay;
     TextInputLayout userframe, passframe;
     String user, pass;
     TextView errorMessage, writeUsername, writePassword, write_user, write_cell, write_email;
@@ -50,6 +57,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     RequestQueue requestQueue;
     String access, privileges = "";
     ScrollView scrollView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +83,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         write_cell = (TextView) findViewById(R.id.write_cell);
         write_email = (TextView) findViewById(R.id.write_cell);
         login_layout = (LinearLayout) findViewById(R.id.login_layout);
+        login_lay = (RelativeLayout) findViewById(R.id.login);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         scrollView.getBackground().setAlpha(200);
         forgotten.getBackground().setAlpha(180);
+
         upAnim= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.zoom_in);
        // scrollView.startAnimation(upAnim);
         login.setOnClickListener(this);
@@ -102,31 +112,44 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
     public void onClick(View view) {
        user = username.getText().toString();
        pass = password.getText().toString();
-        if(user.isEmpty() || pass.isEmpty())
-        {
-            final Animation textAnim = new AlphaAnimation(0.0f,1.0f);
 
-            textAnim.setDuration(50);
-            textAnim.setStartOffset(20);
-            textAnim.setRepeatMode(Animation.REVERSE);
-            textAnim.setRepeatCount(6);
-            if(user.isEmpty())
-            {
-                writeUsername.setVisibility(View.VISIBLE);
-                writeUsername.startAnimation(textAnim);
-            }
-            if(pass.isEmpty())
-            {
-                writePassword.setVisibility(View.VISIBLE);
-                writePassword.startAnimation(textAnim);
-            }
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if(!isConnected) {
+            Dialog dialog = new Dialog(view.getContext());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.no_internet_fragment);
+            dialog.show();
         }
-        else
-        {
-            login(user,pass);
+        else {
+
+            if (user.isEmpty() || pass.isEmpty()) {
+                final Animation textAnim = new AlphaAnimation(0.0f, 1.0f);
+
+                textAnim.setDuration(50);
+                textAnim.setStartOffset(20);
+                textAnim.setRepeatMode(Animation.REVERSE);
+                textAnim.setRepeatCount(6);
+                if (user.isEmpty()) {
+                    writeUsername.setVisibility(View.VISIBLE);
+                    writeUsername.startAnimation(textAnim);
+                }
+                if (pass.isEmpty()) {
+                    writePassword.setVisibility(View.VISIBLE);
+                    writePassword.startAnimation(textAnim);
+                }
+            } else {
+                login(user, pass);
+            }
         }
     }
 

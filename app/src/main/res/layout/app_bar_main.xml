@@ -91,6 +91,4 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     </android.support.design.widget.AppBarLayout>
     <include layout="@layout/content_main" />
-    <include layout="@layout/send_message"/>
-    <include layout="@layout/send_document"/>
 </android.support.design.widget.CoordinatorLayout>

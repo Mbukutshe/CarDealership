@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -45,7 +46,8 @@ public class Retrieve{
     LinearLayout empty;
     TextView icon,icon_message;
     RecyclerView.Adapter mAdapter;
-    public void fetch(final Context context, final RecyclerView recyclerView,final String type)
+
+    public void fetch(final Context context, final RecyclerView recyclerView,final String type,final LinearLayout empty,final TextView icon,final TextView icon_message)
     {
         final ProgressDialog myProgressDialog = new ProgressDialog(context);
         myProgressDialog.show();
@@ -77,16 +79,24 @@ public class Retrieve{
                             image.startAnimation(anim);
                             bar.startAnimation(anim);
                             myProgressDialog.dismiss();
-                          /*  recyclerView.setVisibility(View.VISIBLE);
-                            empty.setVisibility(View.GONE);*/
+                            recyclerView.setVisibility(View.VISIBLE);
+                            empty.setVisibility(View.GONE);
                         }
                         else
                         {
-                         /* recyclerView.setVisibility(View.GONE);
+                          recyclerView.setVisibility(View.GONE);
                             empty.setVisibility(View.VISIBLE);
-                            icon.setBackgroundResource(R.drawable.nomessages);
-                            icon_message.setText("No Messages To Show");
-                            myProgressDialog.dismiss();*/
+                            if(Globals.RETRIEVAL_MESSAGE_CONDITION.equals(type))
+                            {
+                                icon.setBackgroundResource(R.drawable.nomessages);
+                                icon_message.setText("No Messages To Show");
+                            }
+                            else
+                            {
+                                icon.setBackgroundResource(R.drawable.nodocfile);
+                                icon_message.setText("No Documents To Show");
+                            }
+                            myProgressDialog.dismiss();
                         }
 
 

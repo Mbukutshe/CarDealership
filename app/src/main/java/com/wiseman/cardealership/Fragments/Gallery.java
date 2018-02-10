@@ -1,8 +1,11 @@
 package com.wiseman.cardealership.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -42,7 +46,7 @@ import java.util.Map;
  * Created by Wiseman on 2017-10-26.
  */
 
-public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener{
+public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener,View.OnClickListener{
     View view;
     List<Item> myDataset;
     RequestQueue requestQueue;
@@ -53,11 +57,26 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
     public static ImagesAdapter Adapter;
     LinearLayout empty;
     TextView icon,icon_message;
+    ConnectivityManager connectivityManager;
+    NetworkInfo activeNetwork;
+    boolean isConnected;
+    FrameLayout try_again;
+    LinearLayout no_internet;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_gallery,container,false);
+
+        connectivityManager = (ConnectivityManager)view.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        activeNetwork = connectivityManager.getActiveNetworkInfo();
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        try_again = (FrameLayout)view.findViewById(R.id.try_again);
+        no_internet = (LinearLayout)view.findViewById(R.id.no_internet);
+        try_again.setOnClickListener(this);
+
+        requestQueue = Volley.newRequestQueue(view.getContext());
+
         empty = (LinearLayout)view.findViewById(R.id.empty_layout);
         icon = (TextView)view.findViewById(R.id.empty_icon);
         icon_message =(TextView)view.findViewById(R.id.empty_icon_message);
@@ -65,10 +84,12 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+
         TabLayout tabLayout = (TabLayout)view.findViewById(R.id.gallery_tabs);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.images).setText("Images"));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.videos).setText("Videos"));
         tabLayout.setOnTabSelectedListener(this);
+
         myProgressDialog = new ProgressDialog(view.getContext());
         myProgressDialog.show();
         myProgressDialog.setContentView(R.layout.progress);
@@ -120,9 +141,28 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
             }
         };
         request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        requestQueue = Volley.newRequestQueue(view.getContext());
         requestQueue.add(request);
         return view;
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        switch(id )
+        {
+            case R.id.try_again:
+                if(!isConnected)
+                {
+                    no_internet.setVisibility(View.VISIBLE);
+                    mRecyclerView.setVisibility(View.GONE);
+                }
+                else
+                {
+                    no_internet.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
     }
 
     @Override
@@ -182,7 +222,6 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
                     }
                 };
                 request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                requestQueue = Volley.newRequestQueue(view.getContext());
                 requestQueue.add(request);
 
                 break;
@@ -233,7 +272,6 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
                     }
                 };
                 request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                requestQueue = Volley.newRequestQueue(view.getContext());
                 requestQueue.add(request);
                 break;
 
@@ -301,7 +339,6 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
                     }
                 };
                 request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                requestQueue = Volley.newRequestQueue(view.getContext());
                 requestQueue.add(request);
 
                 break;
@@ -352,7 +389,6 @@ public class Gallery extends Fragment implements TabLayout.OnTabSelectedListener
                     }
                 };
                 request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                requestQueue = Volley.newRequestQueue(view.getContext());
                 requestQueue.add(request);
                 break;
 

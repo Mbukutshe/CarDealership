@@ -36,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/bmw"
+                    android:src="@drawable/carplaceholder"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"/>
                 <LinearLayout

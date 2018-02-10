@@ -13,6 +13,7 @@
     <string name="car_dealership">Car Dealership</string>
     <string name="receive_updates_from">Receive Updates From</string>
     <string name="manufacturer">Car Manufacturer</string>
+    <string name="todo">TODO</string>
     <string-array name="users">
         <item>Select users..</item>
         <item>All</item>
@@ -20,8 +21,20 @@
         <item>Dealers</item>
         <item>Partners</item>
     </string-array>
+    <string-array name="provinces">
+        <item>All Provinces</item>
+        <item>Eastern Cape</item>
+        <item>Western Cape</item>
+        <item>Northern Cape</item>
+        <item>Free State</item>
+        <item>North West</item>
+        <item>Gauteng</item>
+        <item>Limpopo</item>
+        <item>Mpumalanga</item>
+        <item>KwaZulu-Natal</item>
+    </string-array>
     <string-array name="make">
-        <item>Any</item>
+        <item>Any Cars</item>
         <item>VW</item>
         <item>Mazda</item>
         <item>Ford</item>

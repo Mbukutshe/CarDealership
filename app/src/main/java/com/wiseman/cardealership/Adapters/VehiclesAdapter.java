@@ -1,43 +1,46 @@
 package com.wiseman.cardealership.Adapters;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
 import com.wiseman.cardealership.Activities.SingleVehicle;
+import com.wiseman.cardealership.Functions.Animation;
+import com.wiseman.cardealership.Globals.VehiclesDetails;
 import com.wiseman.cardealership.Holders.VehiclesHolder;
 import com.wiseman.cardealership.Objects.VehicleObject;
 import com.wiseman.cardealership.R;
 
-import java.io.ByteArrayOutputStream;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Wiseman on 2018-01-25.
  */
 
-public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesHolder> {
+public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesHolder>{
     List<VehicleObject> mDataset;
     Context context,c;
-    RecyclerView recyclerView;
+    public RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    Animation upAnim;
-    ProgressDialog myProgressDialog;
+    public static  int COUNT_DOWN=500;
+    CountDownTimer countDownTimer;
+    Animation anim;
     public VehiclesAdapter(Context context,List<VehicleObject> mDataset,RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager) {
         this.mDataset = mDataset;
         this.context=context;
         this.recyclerView = recyclerView;
         this.layoutManager = layoutManager;
-        this.myProgressDialog = myProgressDialog;
+        anim = new Animation(context);
     }
     @Override
     public VehiclesHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -51,26 +54,48 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesHolder> {
 
     @Override
     public void onBindViewHolder(final VehiclesHolder holder, final int position) {
-        holder.video_thumbnail.setImageResource( mDataset.get(position).getImage());
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.getDefault());
+        ///format.setCurrency(Currency.getInstance("R"));
+        String results = format.format(Double.parseDouble(mDataset.get(position).getPrice()));
+        results = "R"+results.substring(1);
+        Picasso.with(context).load(mDataset.get(position).getUrl()).into(holder.video_thumbnail);
         holder.subject.setText(mDataset.get(position).getName());
         holder.message.setText(mDataset.get(position).getFeaturers());
-        holder.video_duration.setText(mDataset.get(position).getPrice());
+        holder.video_duration.setText(results);
+
         holder.video_footer.getBackground().setAlpha(180);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), mDataset.get(position).getImage());
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                byte[] b = baos.toByteArray();
+
                 Intent intent = new Intent(context, SingleVehicle.class);
-                intent.putExtra("vehicle",b);
-                intent.putExtra("name",mDataset.get(position).getName());
-                intent.putExtra("price",mDataset.get(position).getPrice());
-                intent.putExtra("features",mDataset.get(position).getFeaturers());
+                VehiclesDetails.vehicle = mDataset.get(position).getUrl();
+                VehiclesDetails.name = mDataset.get(position).getName();
+                VehiclesDetails.price = mDataset.get(position).getPrice();
+                VehiclesDetails.features = mDataset.get(position).getFeaturers();
+                VehiclesDetails.transmission = mDataset.get(position).getTransmission();
+                VehiclesDetails.mileage = mDataset.get(position).getMileage();
+                VehiclesDetails.province = mDataset.get(position).getProvince();
                 context.startActivity(intent);
             }
         });
+        anim.goDown(holder.itemView);
+        anim.goDown(holder.video_thumbnail);
+        anim.goDown(holder.subject);
+        anim.goDown(holder.message);
+        anim.goDown(holder.video_duration);
+        anim.goDown(holder.video_footer);
+        countDownTimer = new CountDownTimer(COUNT_DOWN,16) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+            }
+        };
+        countDownTimer.start();
     }
 
     @Override
@@ -83,4 +108,5 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesHolder> {
 
         return bm;
     }
+
 }
